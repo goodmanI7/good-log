@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.goodman17.goodlog.spring.aop.OperationLogAspect,\
+com.goodman17.goodlog.spring.config.OperationLogConfig
