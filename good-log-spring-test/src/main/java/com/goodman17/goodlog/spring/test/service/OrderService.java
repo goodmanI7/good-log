@@ -1,5 +1,7 @@
 package com.goodman17.goodlog.spring.test.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
 import com.goodman17.goodlog.core.annotation.OperationLog;
@@ -15,13 +17,18 @@ public class OrderService {
         System.out.println("创建订单: " + orderId);
     }
 
-    @OperationLog(bizId = "#{#orderDTO.orderId}", bizType = "#{#orderDTO.orderType}", operationType = "创建", msg = "#{#msg}", tags = {
+    @OperationLog(bizId = "#{#orderDTO.orderId}", bizType = "#{#orderDTO.orderType}", operationType = "创建", msg = "#{#diffMsg(#orderDTO, #newOrderDTO)}", tags = {
             "#{#tag1}", "创建" }, extras = {
                     @OperationLogExtra(key = "productId", value = "#{#orderDTO.productId}")
             })
     public void createOrder(OrderDTO orderDTO) {
         System.out.println("创建订单: " + orderDTO);
-        OperationLogContext.putVariable("msg", "创建订单, 金额: " + orderDTO.getOrderAmount());
+        OrderDTO newOrderDTO = new OrderDTO();
+        newOrderDTO.setOrderId(orderDTO.getOrderId());
+        newOrderDTO.setOrderType(orderDTO.getOrderType());
+        newOrderDTO.setProductId(orderDTO.getProductId());
+        newOrderDTO.setOrderAmount(new BigDecimal(110));
+        OperationLogContext.putVariable("newOrderDTO", newOrderDTO);
         OperationLogContext.putVariable("tag1", "订单");
     }
 }

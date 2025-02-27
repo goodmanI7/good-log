@@ -16,6 +16,7 @@ import org.springframework.expression.Expression;
 import org.springframework.lang.Nullable;
 
 import com.goodman17.goodlog.core.context.OperationLogEvaluationContext;
+import com.goodman17.goodlog.core.utils.ObjectComparator;
 
 /**
  * 操作日志表达式求值器，继承自模板表达式求值缓存基类
@@ -87,7 +88,7 @@ public class OperationLogExpressionEvaluator extends CachedTemplateExpressionEva
         try {
             return parseExpression(methodKey, expression, evalContext, clazz);
         } catch (Exception e) {
-            log.error("解析表达式出错: 方法[{}] 表达式[{}]", expression, e);
+            log.error("解析表达式出错: [{}]", expression, e);
             return null;
         }
     }
@@ -118,6 +119,13 @@ public class OperationLogExpressionEvaluator extends CachedTemplateExpressionEva
                 result,
                 errorMsg);
 
+        // 注册基本的函数
+        try {
+            context.registerFunction("diffMsg",
+                    ObjectComparator.class.getDeclaredMethod("diffMsg", Object.class, Object.class));
+        } catch (NoSuchMethodException e) {
+            log.error("注册diffMsg函数失败：方法不存在", e);
+        }
         // 设置Bean解析器（如果存在BeanFactory）
         if (beanFactory != null) {
             context.setBeanResolver(new BeanFactoryResolver(beanFactory));
